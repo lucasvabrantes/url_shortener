@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { UrlDto } from "./dto/url.dto";
 
@@ -11,8 +11,8 @@ export class AppController {
         return this.appService.create(urlDto);
     }
 
-    @Get()
-    get(@Body() urlDto: UrlDto) {
-        return this.appService.retrieve(urlDto);
+    @Get(":hash")
+    retrieve(@Param("hash") hash: string) {
+        return this.appService.retrieve(hash);
     }
 }
