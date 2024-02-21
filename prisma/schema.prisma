@@ -13,8 +13,8 @@ datasource db {
 model Url {
   id              Int      @id @default(autoincrement())
   url             String   @unique
-  expirationDate  DateTime
-  hash            String   @unique
+  newUrl          String   @unique
+  createdAt       DateTime
 
   @@map("urls")
 }

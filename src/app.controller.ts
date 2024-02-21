@@ -13,7 +13,7 @@ export class AppController {
     }
 
     @Get(":hash")
-    retrieve(@Param("hash") hash: string) {
-        return this.appService.retrieve(hash);
+    retrieve(@Param("hash") hash: string, @Res() res: Response) {
+        return this.appService.retrieve(hash, res);
     }
 }

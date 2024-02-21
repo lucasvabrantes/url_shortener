@@ -6,6 +6,7 @@ import {
 import { PrismaService } from "./database/prisma.service";
 import { UrlDto } from "./dto/url.dto";
 import { Url } from "./entity/url.entity";
+import { Response } from "express";
 
 @Injectable()
 export class AppService {
@@ -21,25 +22,28 @@ export class AppService {
 
         const hash = Math.random().toString(36).slice(7);
         let url = new Url();
-        Object.assign(url, { ...urlDto, hash });
-        const urlWithHash = await this.prisma.url.create({ data: { ...url } });
+        const newUrl = "http://localhost:3000/" + hash;
+        Object.assign(url, { ...urlDto, newUrl });
 
-        return urlWithHash;
+        await this.prisma.url.create({ data: { ...url } });
+
+        return { newUrl };
     }
 
-    async retrieve(hash: string): Promise<string> {
+    async retrieve(hash: string, res: Response): Promise<void> {
+        const newUrl = "http://localhost:3000/" + hash;
         const urlExists = await this.prisma.url.findFirst({
-            where: { hash },
+            where: { newUrl },
         });
         if (!urlExists) {
             throw new NotFoundException("Url not found!");
         }
 
         const today: Date = new Date(Date.now());
-        const urlDate: Date = urlExists.expirationDate;
+        const urlDate: Date = urlExists.createdAt;
         const oneDay = 1000 * 60 * 60 * 24;
         const differenceInMs = Math.abs(today.getTime() - urlDate.getTime());
-        const differenceInDays = Math.round(differenceInMs / oneDay);
+        const differenceInDays = Math.round(differenceInMs / oneDay) + 1;
 
         if (differenceInDays > 30) {
             throw new NotFoundException(
@@ -47,6 +51,6 @@ export class AppService {
             );
         }
         const originalUrl = urlExists.url;
-        return originalUrl;
+        return res.redirect(originalUrl);
     }
 }

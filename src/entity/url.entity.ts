@@ -1,10 +1,10 @@
 export class Url {
     readonly id: number;
     url: string;
-    expirationDate: Date;
-    readonly hash: string;
+    readonly newUrl: string;
+    createdAt: Date;
 
     constructor() {
-        this.expirationDate = new Date();
+        this.createdAt = new Date();
     }
 }
